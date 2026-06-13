@@ -155,6 +155,56 @@ demo_phase2/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/demo_phase2.dir/build.make CMakeFiles/demo_phase2.dir/build
 .PHONY : demo_phase2/fast
 
+#=============================================================================
+# Target rules for targets named demo_kinematic
+
+# Build rule for target.
+demo_kinematic: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 demo_kinematic
+.PHONY : demo_kinematic
+
+# fast build rule for target.
+demo_kinematic/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/demo_kinematic.dir/build.make CMakeFiles/demo_kinematic.dir/build
+.PHONY : demo_kinematic/fast
+
+#=============================================================================
+# Target rules for targets named rtk_engine_pro
+
+# Build rule for target.
+rtk_engine_pro: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 rtk_engine_pro
+.PHONY : rtk_engine_pro
+
+# fast build rule for target.
+rtk_engine_pro/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rtk_engine_pro.dir/build.make CMakeFiles/rtk_engine_pro.dir/build
+.PHONY : rtk_engine_pro/fast
+
+src/demo_kinematic.o: src/demo_kinematic.cpp.o
+.PHONY : src/demo_kinematic.o
+
+# target to build an object file
+src/demo_kinematic.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/demo_kinematic.dir/build.make CMakeFiles/demo_kinematic.dir/src/demo_kinematic.cpp.o
+.PHONY : src/demo_kinematic.cpp.o
+
+src/demo_kinematic.i: src/demo_kinematic.cpp.i
+.PHONY : src/demo_kinematic.i
+
+# target to preprocess a source file
+src/demo_kinematic.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/demo_kinematic.dir/build.make CMakeFiles/demo_kinematic.dir/src/demo_kinematic.cpp.i
+.PHONY : src/demo_kinematic.cpp.i
+
+src/demo_kinematic.s: src/demo_kinematic.cpp.s
+.PHONY : src/demo_kinematic.s
+
+# target to generate assembly for a file
+src/demo_kinematic.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/demo_kinematic.dir/build.make CMakeFiles/demo_kinematic.dir/src/demo_kinematic.cpp.s
+.PHONY : src/demo_kinematic.cpp.s
+
 src/demo_phase2.o: src/demo_phase2.cpp.o
 .PHONY : src/demo_phase2.o
 
@@ -203,6 +253,30 @@ src/main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/rtk_engine.dir/build.make CMakeFiles/rtk_engine.dir/src/main.cpp.s
 .PHONY : src/main.cpp.s
 
+src/rtk_engine_pro.o: src/rtk_engine_pro.cpp.o
+.PHONY : src/rtk_engine_pro.o
+
+# target to build an object file
+src/rtk_engine_pro.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rtk_engine_pro.dir/build.make CMakeFiles/rtk_engine_pro.dir/src/rtk_engine_pro.cpp.o
+.PHONY : src/rtk_engine_pro.cpp.o
+
+src/rtk_engine_pro.i: src/rtk_engine_pro.cpp.i
+.PHONY : src/rtk_engine_pro.i
+
+# target to preprocess a source file
+src/rtk_engine_pro.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rtk_engine_pro.dir/build.make CMakeFiles/rtk_engine_pro.dir/src/rtk_engine_pro.cpp.i
+.PHONY : src/rtk_engine_pro.cpp.i
+
+src/rtk_engine_pro.s: src/rtk_engine_pro.cpp.s
+.PHONY : src/rtk_engine_pro.s
+
+# target to generate assembly for a file
+src/rtk_engine_pro.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rtk_engine_pro.dir/build.make CMakeFiles/rtk_engine_pro.dir/src/rtk_engine_pro.cpp.s
+.PHONY : src/rtk_engine_pro.cpp.s
+
 src/test_rtcm.o: src/test_rtcm.cpp.o
 .PHONY : src/test_rtcm.o
 
@@ -235,15 +309,23 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
+	@echo "... demo_kinematic"
 	@echo "... demo_phase2"
 	@echo "... rtk_engine"
+	@echo "... rtk_engine_pro"
 	@echo "... test_rtcm"
+	@echo "... src/demo_kinematic.o"
+	@echo "... src/demo_kinematic.i"
+	@echo "... src/demo_kinematic.s"
 	@echo "... src/demo_phase2.o"
 	@echo "... src/demo_phase2.i"
 	@echo "... src/demo_phase2.s"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
+	@echo "... src/rtk_engine_pro.o"
+	@echo "... src/rtk_engine_pro.i"
+	@echo "... src/rtk_engine_pro.s"
 	@echo "... src/test_rtcm.o"
 	@echo "... src/test_rtcm.i"
 	@echo "... src/test_rtcm.s"

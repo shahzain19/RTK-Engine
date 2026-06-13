@@ -8,6 +8,7 @@
 
 #include "rtk_engine/common.hpp"
 #include <vector>
+#include <cmath>
 
 namespace rtk {
 
@@ -18,8 +19,6 @@ class SignalProcessor {
 public:
     /**
      * @brief Ionosphere-Free (IF) Combination.
-     * @details Eliminates 1st-order ionospheric delay using two frequencies.
-     * @formula P_if = (f1^2 * P1 - f2^2 * P2) / (f1^2 - f2^2)
      */
     static double calculateIonosphereFree(double p1, double f1, double p2, double f2) {
         double f1_sq = f1 * f1;
@@ -29,13 +28,6 @@ public:
 
     /**
      * @brief Wide-Lane (WL) Combination.
-     * @details Creates a virtual signal with a long wavelength (~86cm for L1/L2).
-     * @param phi1 L1 carrier phase (cycles).
-     * @param f1 L1 frequency (Hz).
-     * @param phi2 L2 carrier phase (cycles).
-     * @param f2 L2 frequency (Hz).
-     * @param phi_wl Output wide-lane phase.
-     * @param lam_wl Output wide-lane wavelength.
      */
     static void calculateWideLane(double phi1, double f1, double phi2, double f2, double& phi_wl, double& lam_wl) {
         phi_wl = phi1 - phi2;
@@ -44,11 +36,20 @@ public:
 
     /**
      * @brief Geometry-Free (GF) Combination.
-     * @details Isolates ionospheric delay and cycle slips.
-     * @formula P_gf = P1 - P2
      */
     static double calculateGeometryFree(double p1, double p2) {
         return p1 - p2;
+    }
+
+    /**
+     * @brief Detect cycle slips using the Geometry-Free (GF) phase jump method.
+     * @param gf_current Current GF combination (L1 - L2 in cycles or meters).
+     * @param gf_previous Previous GF combination.
+     * @param threshold Jump threshold (e.g. 0.05m).
+     * @return true If a cycle slip is detected.
+     */
+    static bool detectCycleSlipGf(double gf_current, double gf_previous, double threshold = 0.05) {
+        return std::abs(gf_current - gf_previous) > threshold;
     }
 };
 

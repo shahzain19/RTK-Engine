@@ -53,4 +53,6 @@ set(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/rtk_engine.dir/DependInfo.cmake"
   "CMakeFiles/test_rtcm.dir/DependInfo.cmake"
   "CMakeFiles/demo_phase2.dir/DependInfo.cmake"
+  "CMakeFiles/demo_kinematic.dir/DependInfo.cmake"
+  "CMakeFiles/rtk_engine_pro.dir/DependInfo.cmake"
   )

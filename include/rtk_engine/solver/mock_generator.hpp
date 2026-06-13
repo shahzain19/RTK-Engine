@@ -1,6 +1,6 @@
 /**
  * @file mock_generator.hpp
- * @brief Synthetic GNSS observation generator for testing Multi-GNSS.
+ * @brief Synthetic GNSS observation generator for testing Multi-GNSS and Kinematic motion.
  */
 
 #ifndef RTK_ENGINE_MOCK_GENERATOR_HPP
@@ -16,7 +16,6 @@ namespace rtk {
 
 /**
  * @brief Generates high-fidelity synthetic GNSS observations with errors.
- * @details Simulates geometric range, ionosphere, troposphere, noise, and ambiguities.
  */
 class MockGenerator {
 public:
@@ -65,7 +64,6 @@ public:
 
         double lat_b_rad, lon_b_rad, h_b;
         Geodesy::ecefToGeodetic(true_base_ecef, lat_b_rad, lon_b_rad, h_b);
-
         double lat_r_rad, lon_r_rad, h_r;
         Geodesy::ecefToGeodetic(true_rover_ecef, lat_r_rad, lon_r_rad, h_r);
 
@@ -85,29 +83,23 @@ public:
             double rho_b = (sat_ecef - true_base_ecef).norm();
             double rho_r = (sat_ecef - true_rover_ecef).norm();
 
-            // Compute REAL el/az for Rover
             Vector3 u_enu_r = Geodesy::ecefToEnu(sat_ecef, true_rover_ecef);
             double el_r_rad = std::atan2(u_enu_r.z, std::sqrt(u_enu_r.x * u_enu_r.x + u_enu_r.y * u_enu_r.y));
             double az_r_rad = std::atan2(u_enu_r.x, u_enu_r.y);
             if (az_r_rad < 0) az_r_rad += 2.0 * M_PI;
 
-            // Atmospheric delays (Now they will differ!)
             double iono_b = KlobucharModel::calculateDelay(lat_b_rad * 180 / M_PI, lon_b_rad * 180 / M_PI, az_b_rad, el_b_rad, gps_time);
             double iono_r = KlobucharModel::calculateDelay(lat_r_rad * 180 / M_PI, lon_r_rad * 180 / M_PI, az_r_rad, el_r_rad, gps_time);
-
-            // Troposphere (simplified but based on local elevation)
             double tropo_b = 2.31 / (std::sin(el_b_rad) + 0.05);
             double tropo_r = 2.31 / (std::sin(el_r_rad) + 0.05);
 
             double f1 = GPS_L1_FREQ, f2 = GPS_L2_FREQ;
             if (config.sys == Constellation::GALILEO) { f1 = GAL_E1_FREQ; f2 = GAL_E5B_FREQ; }
             else if (config.sys == Constellation::GLONASS) { f1 = GLO_L1_BASE_FREQ; f2 = GLO_L2_BASE_FREQ; }
-
             double lam1 = SPEED_OF_LIGHT / f1;
             double lam2 = SPEED_OF_LIGHT / f2;
 
-            SatelliteObs b_sat;
-            b_sat.svid = config.svid; b_sat.sys = config.sys; b_sat.elevation = el_b_rad; b_sat.azimuth = az_b_rad;
+            SatelliteObs b_sat; b_sat.svid = config.svid; b_sat.sys = config.sys; b_sat.elevation = el_b_rad; b_sat.azimuth = az_b_rad;
             SignalObs b1, b2;
             b1.frequency = f1; b1.pseudorange = rho_b + iono_b + tropo_b + generateGaussianNoise(0, 0.01);
             b1.carrier_phase = (rho_b - iono_b + tropo_b + generateGaussianNoise(0, 0.001)) / lam1;
@@ -117,8 +109,7 @@ public:
             b_sat.signals = {b1, b2}; b_sat.pseudorange = b1.pseudorange; b_sat.carrier_phase = b1.carrier_phase;
             base_obs.sat_obs.push_back(b_sat);
 
-            SatelliteObs r_sat;
-            r_sat.svid = config.svid; r_sat.sys = config.sys; r_sat.elevation = el_r_rad; r_sat.azimuth = az_r_rad;
+            SatelliteObs r_sat; r_sat.svid = config.svid; r_sat.sys = config.sys; r_sat.elevation = el_r_rad; r_sat.azimuth = az_r_rad;
             SignalObs r1, r2;
             r1.frequency = f1; r1.pseudorange = rho_r + iono_r + tropo_r + generateGaussianNoise(0, 0.02);
             r1.carrier_phase = (rho_r - iono_r + tropo_r + generateGaussianNoise(0, 0.002)) / lam1 + config.ambiguity_cycles_l1;
@@ -128,6 +119,24 @@ public:
             r_sat.signals = {r1, r2}; r_sat.pseudorange = r1.pseudorange; r_sat.carrier_phase = r1.carrier_phase;
             rover_obs.sat_obs.push_back(r_sat);
         }
+    }
+
+    /**
+     * @brief Pre-calculates satellite positions for a set of configs once to save time in loops.
+     */
+    static std::vector<Vector3> precomputeSatPositions(const Vector3& true_base_ecef) {
+        const std::vector<double> el_degs = {55.0, 65.0, 42.0, 28.0, 55.0, 55.0, 78.0, 35.0, 45.0, 18.0, 60.0, 30.0};
+        const std::vector<double> az_degs = {10.0, 45.0, 135.0, 225.0, 315.0, 315.0, 270.0, 180.0, 60.0, 90.0, 200.0, 300.0};
+        const std::vector<double> ranges  = {20.2e6, 20.2e6, 20.2e6, 20.2e6, 20.2e6, 23.2e6, 23.2e6, 23.2e6, 23.2e6, 19.1e6, 19.1e6, 19.1e6};
+        
+        std::vector<Vector3> pos;
+        for (size_t i = 0; i < el_degs.size(); ++i) {
+            double el = el_degs[i] * M_PI / 180.0, az = az_degs[i] * M_PI / 180.0;
+            Vector3 u_enu(std::cos(el) * std::sin(az), std::cos(el) * std::cos(az), std::sin(el));
+            Vector3 u_ecef = (Geodesy::enuToEcef(u_enu, true_base_ecef) - true_base_ecef).normalized();
+            pos.push_back(true_base_ecef + u_ecef * ranges[i]);
+        }
+        return pos;
     }
 };
 
