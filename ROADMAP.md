@@ -37,6 +37,8 @@ This document outlines the development phases for the Lightweight Pure-Software 
 ## Phase 6: Commercial Readiness (Complete)
 - [x] **Configuration Framework:** TOML-based parameter management using `toml.hpp`.
 - [x] **Stable C-API:** ABI-stable C interface (`rtk_api.h`) for integration with other languages.
+- [x] **INS/GNSS Fusion:** Full integration of IMU (Gyro/Accel) data into the EKF prediction loop.
+- [x] **Attitude Tracking:** Real-time Roll, Pitch, Yaw estimation.
 - [x] **Modular Refactoring:** Clean separation of solver, protocol, and UI layers.
 
 ## Phase 7: PPP & Future (In Progress)

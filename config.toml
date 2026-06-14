@@ -1,0 +1,22 @@
+# Gemini-RTK Configuration
+
+[ntrip]
+host = "" # Leave empty for mock mode
+port = 2101
+mountpoint = "BASE1"
+user = "user"
+password = "password"
+
+[initial]
+lat = 37.422
+lon = -122.084
+alt = 30.0
+
+[physics]
+speed_of_light = 299792458.0
+gravity = 9.80665
+
+[gnss]
+gps_l1_freq = 1575420000.0
+gal_e1_freq = 1575420000.0
+glo_l1_base_freq = 1602000000.0

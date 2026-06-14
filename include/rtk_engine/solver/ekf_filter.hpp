@@ -7,6 +7,7 @@
 #define RTK_ENGINE_EKF_FILTER_HPP
 
 #include "rtk_engine/common.hpp"
+#include "rtk_engine/geodesy.hpp"
 #include "rtk_engine/solver/solver_utils.hpp"
 #include "rtk_engine/solver/signal_processor.hpp"
 #include <map>
@@ -156,6 +157,12 @@ public:
         for (const auto& [sys, ref_data] : ref_base) {
             if (ref_rover.count(sys) == 0) continue;
             int b_ref_idx = ref_data.sat_idx, r_ref_idx = ref_rover[sys].sat_idx;
+            
+            if (b_ref_idx >= (int)sat_positions.size()) {
+                std::cerr << "[EKF] Error: b_ref_idx out of bounds" << std::endl;
+                continue;
+            }
+
             const Eigen::Vector3d s_ref(sat_positions[b_ref_idx].x, sat_positions[b_ref_idx].y, sat_positions[b_ref_idx].z);
             
             double rho_r_ref = (s_ref - pos_est).norm();
@@ -167,6 +174,11 @@ public:
                 int svid = base.sat_obs[i].svid;
                 if (base.sat_obs[i].sys != sys || static_cast<int>(i) == b_ref_idx || svid_to_idx_.count(svid) == 0) continue;
                 
+                if (i >= sat_positions.size()) {
+                    std::cerr << "[EKF] Error: sat index out of bounds" << std::endl;
+                    continue;
+                }
+
                 int r_idx = -1;
                 for (size_t j = 0; j < rover.sat_obs.size(); ++j) if (rover.sat_obs[j].svid == svid && rover.sat_obs[j].sys == sys) { r_idx = j; break; }
                 if (r_idx == -1) continue;

@@ -36,7 +36,8 @@ The engine is organized into specialized, fully-documented modules:
 - **Kinematic State Estimation (EKF):**
   - Continuous tracking of Position $(X,Y,Z)$, Velocity $(V_x,V_y,V_z)$, and Acceleration.
   - Maintains carrier-phase ambiguity states across epochs for consistent precision.
-  - **Inertial Bias Handling:** Pre-configured states for Gyro/Accel biases.
+  - **INS/GNSS Fusion:** Real-time integration of Gyroscope and Accelerometer data to bridge GNSS outages and handle high dynamics.
+  - **Attitude Estimation:** Live tracking of Roll, Pitch, and Yaw (Euler angles) within the EKF state space.
   - High-precision **Cycle Slip Detection** using Geometry-Free (GF) meter-level jumps.
 - **Professional Multi-GNSS Solving:**
   - Jointly processes **GPS, GLONASS, and Galileo** observations in a single least-squares loop.

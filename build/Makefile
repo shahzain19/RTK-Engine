@@ -182,6 +182,19 @@ rtk_engine_pro/fast:
 .PHONY : rtk_engine_pro/fast
 
 #=============================================================================
+# Target rules for targets named rtk_tool
+
+# Build rule for target.
+rtk_tool: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 rtk_tool
+.PHONY : rtk_tool
+
+# fast build rule for target.
+rtk_tool/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rtk_tool.dir/build.make CMakeFiles/rtk_tool.dir/build
+.PHONY : rtk_tool/fast
+
+#=============================================================================
 # Target rules for targets named test_config
 
 # Build rule for target.
@@ -272,6 +285,7 @@ src/ppp_parser.o: src/ppp_parser.cpp.o
 # target to build an object file
 src/ppp_parser.cpp.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/rtk_engine.dir/build.make CMakeFiles/rtk_engine.dir/src/ppp_parser.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rtk_tool.dir/build.make CMakeFiles/rtk_tool.dir/src/ppp_parser.cpp.o
 .PHONY : src/ppp_parser.cpp.o
 
 src/ppp_parser.i: src/ppp_parser.cpp.i
@@ -280,6 +294,7 @@ src/ppp_parser.i: src/ppp_parser.cpp.i
 # target to preprocess a source file
 src/ppp_parser.cpp.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/rtk_engine.dir/build.make CMakeFiles/rtk_engine.dir/src/ppp_parser.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rtk_tool.dir/build.make CMakeFiles/rtk_tool.dir/src/ppp_parser.cpp.i
 .PHONY : src/ppp_parser.cpp.i
 
 src/ppp_parser.s: src/ppp_parser.cpp.s
@@ -288,7 +303,32 @@ src/ppp_parser.s: src/ppp_parser.cpp.s
 # target to generate assembly for a file
 src/ppp_parser.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/rtk_engine.dir/build.make CMakeFiles/rtk_engine.dir/src/ppp_parser.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rtk_tool.dir/build.make CMakeFiles/rtk_tool.dir/src/ppp_parser.cpp.s
 .PHONY : src/ppp_parser.cpp.s
+
+src/rtk_app.o: src/rtk_app.cpp.o
+.PHONY : src/rtk_app.o
+
+# target to build an object file
+src/rtk_app.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rtk_tool.dir/build.make CMakeFiles/rtk_tool.dir/src/rtk_app.cpp.o
+.PHONY : src/rtk_app.cpp.o
+
+src/rtk_app.i: src/rtk_app.cpp.i
+.PHONY : src/rtk_app.i
+
+# target to preprocess a source file
+src/rtk_app.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rtk_tool.dir/build.make CMakeFiles/rtk_tool.dir/src/rtk_app.cpp.i
+.PHONY : src/rtk_app.cpp.i
+
+src/rtk_app.s: src/rtk_app.cpp.s
+.PHONY : src/rtk_app.s
+
+# target to generate assembly for a file
+src/rtk_app.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rtk_tool.dir/build.make CMakeFiles/rtk_tool.dir/src/rtk_app.cpp.s
+.PHONY : src/rtk_app.cpp.s
 
 src/rtk_engine_pro.o: src/rtk_engine_pro.cpp.o
 .PHONY : src/rtk_engine_pro.o
@@ -313,6 +353,30 @@ src/rtk_engine_pro.s: src/rtk_engine_pro.cpp.s
 src/rtk_engine_pro.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/rtk_engine_pro.dir/build.make CMakeFiles/rtk_engine_pro.dir/src/rtk_engine_pro.cpp.s
 .PHONY : src/rtk_engine_pro.cpp.s
+
+src/rtk_tool.o: src/rtk_tool.cpp.o
+.PHONY : src/rtk_tool.o
+
+# target to build an object file
+src/rtk_tool.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rtk_tool.dir/build.make CMakeFiles/rtk_tool.dir/src/rtk_tool.cpp.o
+.PHONY : src/rtk_tool.cpp.o
+
+src/rtk_tool.i: src/rtk_tool.cpp.i
+.PHONY : src/rtk_tool.i
+
+# target to preprocess a source file
+src/rtk_tool.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rtk_tool.dir/build.make CMakeFiles/rtk_tool.dir/src/rtk_tool.cpp.i
+.PHONY : src/rtk_tool.cpp.i
+
+src/rtk_tool.s: src/rtk_tool.cpp.s
+.PHONY : src/rtk_tool.s
+
+# target to generate assembly for a file
+src/rtk_tool.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rtk_tool.dir/build.make CMakeFiles/rtk_tool.dir/src/rtk_tool.cpp.s
+.PHONY : src/rtk_tool.cpp.s
 
 src/test_rtcm.o: src/test_rtcm.cpp.o
 .PHONY : src/test_rtcm.o
@@ -344,6 +408,7 @@ src/troposphere.o: src/troposphere.cpp.o
 # target to build an object file
 src/troposphere.cpp.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/rtk_engine.dir/build.make CMakeFiles/rtk_engine.dir/src/troposphere.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rtk_tool.dir/build.make CMakeFiles/rtk_tool.dir/src/troposphere.cpp.o
 .PHONY : src/troposphere.cpp.o
 
 src/troposphere.i: src/troposphere.cpp.i
@@ -352,6 +417,7 @@ src/troposphere.i: src/troposphere.cpp.i
 # target to preprocess a source file
 src/troposphere.cpp.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/rtk_engine.dir/build.make CMakeFiles/rtk_engine.dir/src/troposphere.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rtk_tool.dir/build.make CMakeFiles/rtk_tool.dir/src/troposphere.cpp.i
 .PHONY : src/troposphere.cpp.i
 
 src/troposphere.s: src/troposphere.cpp.s
@@ -360,6 +426,7 @@ src/troposphere.s: src/troposphere.cpp.s
 # target to generate assembly for a file
 src/troposphere.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/rtk_engine.dir/build.make CMakeFiles/rtk_engine.dir/src/troposphere.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rtk_tool.dir/build.make CMakeFiles/rtk_tool.dir/src/troposphere.cpp.s
 .PHONY : src/troposphere.cpp.s
 
 tests/test_config.o: tests/test_config.cpp.o
@@ -398,6 +465,7 @@ help:
 	@echo "... demo_phase2"
 	@echo "... rtk_engine"
 	@echo "... rtk_engine_pro"
+	@echo "... rtk_tool"
 	@echo "... test_config"
 	@echo "... test_rtcm"
 	@echo "... src/demo_kinematic.o"
@@ -412,9 +480,15 @@ help:
 	@echo "... src/ppp_parser.o"
 	@echo "... src/ppp_parser.i"
 	@echo "... src/ppp_parser.s"
+	@echo "... src/rtk_app.o"
+	@echo "... src/rtk_app.i"
+	@echo "... src/rtk_app.s"
 	@echo "... src/rtk_engine_pro.o"
 	@echo "... src/rtk_engine_pro.i"
 	@echo "... src/rtk_engine_pro.s"
+	@echo "... src/rtk_tool.o"
+	@echo "... src/rtk_tool.i"
+	@echo "... src/rtk_tool.s"
 	@echo "... src/test_rtcm.o"
 	@echo "... src/test_rtcm.i"
 	@echo "... src/test_rtcm.s"

@@ -23,5 +23,8 @@ target_link_libraries(demo_kinematic Eigen3::Eigen)
 add_executable(rtk_engine_pro src/rtk_engine_pro.cpp)
 target_link_libraries(rtk_engine_pro Eigen3::Eigen)
 
+add_executable(rtk_tool src/rtk_tool.cpp src/rtk_app.cpp src/ppp_parser.cpp src/troposphere.cpp)
+target_link_libraries(rtk_tool Eigen3::Eigen)
+
 add_executable(test_config tests/test_config.cpp)
 target_link_libraries(test_config Eigen3::Eigen)
