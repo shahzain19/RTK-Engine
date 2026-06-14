@@ -17,29 +17,31 @@ public:
         try {
             config_ = toml::parse_file(filepath);
             return true;
-        } catch (const toml::parse_error& err) {
-            std::cerr << "Parsing failed: " << err << "\n";
+        } catch (const std::exception& err) {
+            std::cerr << "[CONFIG] Error loading " << filepath << ": " << err.what() << "\n";
             return false;
         }
     }
 
     template <typename T>
-    T get(const std::string& key) const {
-        auto node = config_[key];
-        if (node) {
-            return node.value_or(T{});
-        }
-        
-        // Handle nested keys (basic implementation)
+    T get(const std::string& key, T default_val = T{}) const {
+        // Handle nested keys like "ntrip.host"
         size_t pos = key.find('.');
         if (pos != std::string::npos) {
             std::string parent = key.substr(0, pos);
             std::string child = key.substr(pos + 1);
-            if (config_[parent].is_table()) {
-                return config_[parent].as_table()->get(child)->value_or(T{});
+            
+            auto node = config_.get(parent);
+            if (node && node->is_table()) {
+                auto val = node->as_table()->get(child);
+                if (val) return val->value_or(default_val);
             }
+        } else {
+            auto node = config_.get(key);
+            if (node) return node->value_or(default_val);
         }
-        return T{};
+        
+        return default_val;
     }
 
 private:

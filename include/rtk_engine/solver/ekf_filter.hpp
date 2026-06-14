@@ -23,6 +23,8 @@ namespace rtk {
  */
 class EkfFilter {
 public:
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    
     // --- State Vector Indices ---
     static constexpr int IDX_POS = 0;   ///< ECEF X, Y, Z (0, 1, 2)
     static constexpr int IDX_VEL = 3;   ///< ECEF Vx, Vy, Vz (3, 4, 5)

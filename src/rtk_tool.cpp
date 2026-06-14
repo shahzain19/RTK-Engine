@@ -6,13 +6,17 @@
 #include "rtk_engine/rtk_app.hpp"
 #include <iostream>
 #include <csignal>
+#include <memory>
 
 namespace {
-    rtk::RtkEngineApp* g_app_ptr = nullptr;
+    std::unique_ptr<rtk::RtkEngineApp> g_app;
 }
 
 void handleSignal(int signum) {
-    if (g_app_ptr) g_app_ptr->stop();
+    if (g_app) {
+        std::cout << "\n[TOOL] Shutdown signal received. Stopping engine...\n";
+        g_app->stop();
+    }
 }
 
 int main(int argc, char** argv) {
@@ -26,12 +30,18 @@ int main(int argc, char** argv) {
     std::cout << "        GEMINI-RTK: PROFESSIONAL NAVIGATION TERMINAL                     \n";
     std::cout << "========================================================================\n";
     
-    rtk::RtkEngineApp app;
-    g_app_ptr = &app;
-    
-    if (!app.start(config_file)) {
+    try {
+        g_app = std::make_unique<rtk::RtkEngineApp>();
+        
+        if (!g_app->start(config_file)) {
+            std::cerr << "[TOOL] Engine failed to start.\n";
+            return 1;
+        }
+    } catch (const std::exception& e) {
+        std::cerr << "[TOOL] Critical Exception: " << e.what() << "\n";
         return 1;
     }
 
+    std::cout << "[TOOL] Engine terminated.\n";
     return 0;
 }

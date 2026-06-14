@@ -22,11 +22,11 @@ RtkEngineApp::~RtkEngineApp() {
 bool RtkEngineApp::start(const std::string& config_path) {
     auto& cfg = rtk_engine::ConfigManager::instance();
     if (!cfg.load(config_path)) {
-        std::cerr << "[APP] Failed to load config from " << config_path << "\n";
+        std::cerr << "[APP] Error: Could not load config " << config_path << "\n";
         return false;
     }
 
-    // 1. Ingest Config
+    // 1. Configure NTRIP (Optional)
     std::string host = cfg.get<std::string>("ntrip.host");
     if (!host.empty()) {
         NtripClient::Config ncfg;
@@ -38,16 +38,16 @@ bool RtkEngineApp::start(const std::string& config_path) {
         
         ntrip_client_ = std::make_unique<NtripClient>(ncfg);
         if (!ntrip_client_->connect()) {
-            std::cerr << "[APP] Warning: NTRIP failed. Using Mock Base.\n";
+            std::cerr << "[APP] Warning: NTRIP failed. Falling back to mock data.\n";
             ntrip_client_.reset();
         }
     }
 
     // 2. Initialize Solver
     Vector3 init_pos = Geodesy::geodeticToEcef(
-        cfg.get<double>("initial.lat") * M_PI / 180.0,
-        cfg.get<double>("initial.lon") * M_PI / 180.0,
-        cfg.get<double>("initial.alt")
+        cfg.get<double>("initial.lat", 37.422) * M_PI / 180.0,
+        cfg.get<double>("initial.lon", -122.084) * M_PI / 180.0,
+        cfg.get<double>("initial.alt", 30.0)
     );
     ekf_.initialize(init_pos, 0.0);
 
@@ -82,7 +82,7 @@ void RtkEngineApp::run() {
 
         if (last_base_obs_.sat_obs.size() >= 4 && last_rover_obs_.sat_obs.size() >= 4) {
             
-            // IMU Fusion
+            // IMU Fusion (Simple circular motion mock for demo)
             ImuMeas imu;
             double angle = (t * 10.0) * M_PI / 180.0;
             imu.t = t;
@@ -116,11 +116,12 @@ void RtkEngineApp::run() {
 
 void RtkEngineApp::processBaseData() {
     if (!ntrip_client_) {
+        // Mock Base at config location
         auto& cfg = rtk_engine::ConfigManager::instance();
         Vector3 base_ecef = Geodesy::geodeticToEcef(
-            cfg.get<double>("initial.lat") * M_PI / 180.0,
-            cfg.get<double>("initial.lon") * M_PI / 180.0,
-            cfg.get<double>("initial.alt")
+            cfg.get<double>("initial.lat", 37.422) * M_PI / 180.0,
+            cfg.get<double>("initial.lon", -122.084) * M_PI / 180.0,
+            cfg.get<double>("initial.alt", 30.0)
         );
         EpochObs rover_dummy;
         last_base_obs_.sat_obs.clear();
@@ -160,9 +161,11 @@ void RtkEngineApp::processBaseData() {
 void RtkEngineApp::processRoverData() {
     Vector3 base_ecef = last_base_obs_.ref_pos;
     if (base_ecef.norm() < 1e6) return;
+
     double angle = (current_gps_time_ * 10.0) * M_PI / 180.0;
     Vector3 true_enu(15.0 * std::cos(angle), 15.0 * std::sin(angle), 0.0);
     Vector3 true_ecef = Geodesy::enuToEcef(true_enu, base_ecef);
+    
     EpochObs base_dummy;
     last_rover_obs_.sat_obs.clear();
     MockGenerator::generateMockObservations(base_ecef, true_ecef, current_gps_time_, base_dummy, last_rover_obs_);
