@@ -181,6 +181,19 @@ rtk_engine_pro/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/rtk_engine_pro.dir/build.make CMakeFiles/rtk_engine_pro.dir/build
 .PHONY : rtk_engine_pro/fast
 
+#=============================================================================
+# Target rules for targets named test_config
+
+# Build rule for target.
+test_config: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_config
+.PHONY : test_config
+
+# fast build rule for target.
+test_config/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_config.dir/build.make CMakeFiles/test_config.dir/build
+.PHONY : test_config/fast
+
 src/demo_kinematic.o: src/demo_kinematic.cpp.o
 .PHONY : src/demo_kinematic.o
 
@@ -253,6 +266,30 @@ src/main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/rtk_engine.dir/build.make CMakeFiles/rtk_engine.dir/src/main.cpp.s
 .PHONY : src/main.cpp.s
 
+src/ppp_parser.o: src/ppp_parser.cpp.o
+.PHONY : src/ppp_parser.o
+
+# target to build an object file
+src/ppp_parser.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rtk_engine.dir/build.make CMakeFiles/rtk_engine.dir/src/ppp_parser.cpp.o
+.PHONY : src/ppp_parser.cpp.o
+
+src/ppp_parser.i: src/ppp_parser.cpp.i
+.PHONY : src/ppp_parser.i
+
+# target to preprocess a source file
+src/ppp_parser.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rtk_engine.dir/build.make CMakeFiles/rtk_engine.dir/src/ppp_parser.cpp.i
+.PHONY : src/ppp_parser.cpp.i
+
+src/ppp_parser.s: src/ppp_parser.cpp.s
+.PHONY : src/ppp_parser.s
+
+# target to generate assembly for a file
+src/ppp_parser.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rtk_engine.dir/build.make CMakeFiles/rtk_engine.dir/src/ppp_parser.cpp.s
+.PHONY : src/ppp_parser.cpp.s
+
 src/rtk_engine_pro.o: src/rtk_engine_pro.cpp.o
 .PHONY : src/rtk_engine_pro.o
 
@@ -301,6 +338,54 @@ src/test_rtcm.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_rtcm.dir/build.make CMakeFiles/test_rtcm.dir/src/test_rtcm.cpp.s
 .PHONY : src/test_rtcm.cpp.s
 
+src/troposphere.o: src/troposphere.cpp.o
+.PHONY : src/troposphere.o
+
+# target to build an object file
+src/troposphere.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rtk_engine.dir/build.make CMakeFiles/rtk_engine.dir/src/troposphere.cpp.o
+.PHONY : src/troposphere.cpp.o
+
+src/troposphere.i: src/troposphere.cpp.i
+.PHONY : src/troposphere.i
+
+# target to preprocess a source file
+src/troposphere.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rtk_engine.dir/build.make CMakeFiles/rtk_engine.dir/src/troposphere.cpp.i
+.PHONY : src/troposphere.cpp.i
+
+src/troposphere.s: src/troposphere.cpp.s
+.PHONY : src/troposphere.s
+
+# target to generate assembly for a file
+src/troposphere.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rtk_engine.dir/build.make CMakeFiles/rtk_engine.dir/src/troposphere.cpp.s
+.PHONY : src/troposphere.cpp.s
+
+tests/test_config.o: tests/test_config.cpp.o
+.PHONY : tests/test_config.o
+
+# target to build an object file
+tests/test_config.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_config.dir/build.make CMakeFiles/test_config.dir/tests/test_config.cpp.o
+.PHONY : tests/test_config.cpp.o
+
+tests/test_config.i: tests/test_config.cpp.i
+.PHONY : tests/test_config.i
+
+# target to preprocess a source file
+tests/test_config.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_config.dir/build.make CMakeFiles/test_config.dir/tests/test_config.cpp.i
+.PHONY : tests/test_config.cpp.i
+
+tests/test_config.s: tests/test_config.cpp.s
+.PHONY : tests/test_config.s
+
+# target to generate assembly for a file
+tests/test_config.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_config.dir/build.make CMakeFiles/test_config.dir/tests/test_config.cpp.s
+.PHONY : tests/test_config.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -313,6 +398,7 @@ help:
 	@echo "... demo_phase2"
 	@echo "... rtk_engine"
 	@echo "... rtk_engine_pro"
+	@echo "... test_config"
 	@echo "... test_rtcm"
 	@echo "... src/demo_kinematic.o"
 	@echo "... src/demo_kinematic.i"
@@ -323,12 +409,21 @@ help:
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
+	@echo "... src/ppp_parser.o"
+	@echo "... src/ppp_parser.i"
+	@echo "... src/ppp_parser.s"
 	@echo "... src/rtk_engine_pro.o"
 	@echo "... src/rtk_engine_pro.i"
 	@echo "... src/rtk_engine_pro.s"
 	@echo "... src/test_rtcm.o"
 	@echo "... src/test_rtcm.i"
 	@echo "... src/test_rtcm.s"
+	@echo "... src/troposphere.o"
+	@echo "... src/troposphere.i"
+	@echo "... src/troposphere.s"
+	@echo "... tests/test_config.o"
+	@echo "... tests/test_config.i"
+	@echo "... tests/test_config.s"
 .PHONY : help
 
 

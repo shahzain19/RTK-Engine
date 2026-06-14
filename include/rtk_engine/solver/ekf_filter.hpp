@@ -111,7 +111,7 @@ public:
             double rho_r_ref = (s_ref - pos_est).norm();
             const Eigen::Vector3d e_r_ref = (s_ref - pos_est) / rho_r_ref;
             double SD_P_ref = rover.sat_obs[r_ref_idx].pseudorange - base.sat_obs[b_ref_idx].pseudorange;
-            double SD_L_ref = (rover.sat_obs[r_ref_idx].carrier_phase - base.sat_obs[b_ref_idx].carrier_phase) * GPS_L1_WAVELENGTH;
+            double SD_L_ref = (rover.sat_obs[r_ref_idx].carrier_phase - base.sat_obs[b_ref_idx].carrier_phase) * GPS_L1_WAVELENGTH();
 
             for (size_t i = 0; i < base.sat_obs.size(); ++i) {
                 int svid = base.sat_obs[i].svid;
@@ -126,14 +126,14 @@ public:
                 const Eigen::Vector3d e_r_i = (s_i - pos_est) / rho_r_i;
 
                 double SD_P_i = rover.sat_obs[r_idx].pseudorange - base.sat_obs[i].pseudorange;
-                double SD_L_i = (rover.sat_obs[r_idx].carrier_phase - base.sat_obs[i].carrier_phase) * GPS_L1_WAVELENGTH;
+                double SD_L_i = (rover.sat_obs[r_idx].carrier_phase - base.sat_obs[i].carrier_phase) * GPS_L1_WAVELENGTH();
 
                 double DD_P_obs = SD_P_i - SD_P_ref;
                 double DD_L_obs = SD_L_i - SD_L_ref;
                 double DD_rho_est = (rho_r_i - (s_i - base_pos).norm()) - (rho_r_ref - (s_ref - base_pos).norm());
 
                 int amb_idx = svid_to_idx_[svid];
-                double DD_N_est = state_(amb_idx) * GPS_L1_WAVELENGTH;
+                double DD_N_est = state_(amb_idx) * GPS_L1_WAVELENGTH();
 
                 Eigen::VectorXd h_p = Eigen::VectorXd::Zero(state_.size());
                 h_p.segment<3>(IDX_POS) = e_r_ref - e_r_i;
@@ -143,7 +143,7 @@ public:
 
                 Eigen::VectorXd h_l = Eigen::VectorXd::Zero(state_.size());
                 h_l.segment<3>(IDX_POS) = e_r_ref - e_r_i;
-                h_l(amb_idx) = GPS_L1_WAVELENGTH;
+                h_l(amb_idx) = GPS_L1_WAVELENGTH();
                 if (sys == Constellation::GLONASS) h_l(IDX_IFB) = 1.0;
                 H_rows.push_back(h_l);
                 residuals.push_back(DD_L_obs - (DD_rho_est + DD_N_est));
@@ -174,7 +174,7 @@ public:
             bool slip = false;
             for (const auto& obs : rover.sat_obs) {
                 if (obs.svid == svid && obs.signals.size() >= 2) {
-                    double lam1 = SPEED_OF_LIGHT / obs.signals[0].frequency, lam2 = SPEED_OF_LIGHT / obs.signals[1].frequency;
+                    double lam1 = SPEED_OF_LIGHT() / obs.signals[0].frequency, lam2 = SPEED_OF_LIGHT() / obs.signals[1].frequency;
                     double gf = obs.signals[0].carrier_phase * lam1 - obs.signals[1].carrier_phase * lam2;
                     if (prev_gf_obs_.count(svid) && SignalProcessor::detectCycleSlipGf(gf, prev_gf_obs_[svid])) slip = true;
                     prev_gf_obs_[svid] = gf; break;
@@ -202,8 +202,8 @@ public:
                     const Eigen::Vector3d s_i(sat_positions[b_idx].x, sat_positions[b_idx].y, sat_positions[b_idx].z);
                     const Eigen::Vector3d s_ref(sat_positions[b_ref_idx].x, sat_positions[b_ref_idx].y, sat_positions[b_ref_idx].z);
                     double DD_rho = ((s_i - pos_est).norm() - (s_i - base_pos).norm()) - ((s_ref - pos_est).norm() - (s_ref - base_pos).norm());
-                    double DD_L = (rover.sat_obs[r_idx].carrier_phase - base.sat_obs[b_idx].carrier_phase - (rover.sat_obs[r_ref_idx].carrier_phase - base.sat_obs[b_ref_idx].carrier_phase)) * GPS_L1_WAVELENGTH;
-                    addState((DD_L - DD_rho) / GPS_L1_WAVELENGTH, 1000.0);
+                    double DD_L = (rover.sat_obs[r_idx].carrier_phase - base.sat_obs[b_idx].carrier_phase - (rover.sat_obs[r_ref_idx].carrier_phase - base.sat_obs[b_ref_idx].carrier_phase)) * GPS_L1_WAVELENGTH();
+                    addState((DD_L - DD_rho) / GPS_L1_WAVELENGTH(), 1000.0);
                     svid_to_idx_[svid] = state_.size() - 1;
                 }
             }

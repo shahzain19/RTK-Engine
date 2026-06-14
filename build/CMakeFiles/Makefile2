@@ -68,6 +68,7 @@ all: CMakeFiles/test_rtcm.dir/all
 all: CMakeFiles/demo_phase2.dir/all
 all: CMakeFiles/demo_kinematic.dir/all
 all: CMakeFiles/rtk_engine_pro.dir/all
+all: CMakeFiles/test_config.dir/all
 .PHONY : all
 
 # The main recursive "codegen" target.
@@ -76,6 +77,7 @@ codegen: CMakeFiles/test_rtcm.dir/codegen
 codegen: CMakeFiles/demo_phase2.dir/codegen
 codegen: CMakeFiles/demo_kinematic.dir/codegen
 codegen: CMakeFiles/rtk_engine_pro.dir/codegen
+codegen: CMakeFiles/test_config.dir/codegen
 .PHONY : codegen
 
 # The main recursive "preinstall" target.
@@ -88,6 +90,7 @@ clean: CMakeFiles/test_rtcm.dir/clean
 clean: CMakeFiles/demo_phase2.dir/clean
 clean: CMakeFiles/demo_kinematic.dir/clean
 clean: CMakeFiles/rtk_engine_pro.dir/clean
+clean: CMakeFiles/test_config.dir/clean
 .PHONY : clean
 
 #=============================================================================
@@ -97,12 +100,12 @@ clean: CMakeFiles/rtk_engine_pro.dir/clean
 CMakeFiles/rtk_engine.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/rtk_engine.dir/build.make CMakeFiles/rtk_engine.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/rtk_engine.dir/build.make CMakeFiles/rtk_engine.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/shyn/Desktop/c++/engineering/rtk/build/CMakeFiles --progress-num=5,6 "Built target rtk_engine"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/shyn/Desktop/c++/engineering/rtk/build/CMakeFiles --progress-num=5,6,7,8 "Built target rtk_engine"
 .PHONY : CMakeFiles/rtk_engine.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/rtk_engine.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/shyn/Desktop/c++/engineering/rtk/build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/shyn/Desktop/c++/engineering/rtk/build/CMakeFiles 4
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/rtk_engine.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/shyn/Desktop/c++/engineering/rtk/build/CMakeFiles 0
 .PHONY : CMakeFiles/rtk_engine.dir/rule
@@ -114,7 +117,7 @@ rtk_engine: CMakeFiles/rtk_engine.dir/rule
 # codegen rule for target.
 CMakeFiles/rtk_engine.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/rtk_engine.dir/build.make CMakeFiles/rtk_engine.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/shyn/Desktop/c++/engineering/rtk/build/CMakeFiles --progress-num=5,6 "Finished codegen for target rtk_engine"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/shyn/Desktop/c++/engineering/rtk/build/CMakeFiles --progress-num=5,6,7,8 "Finished codegen for target rtk_engine"
 .PHONY : CMakeFiles/rtk_engine.dir/codegen
 
 # clean rule for target.
@@ -129,7 +132,7 @@ CMakeFiles/rtk_engine.dir/clean:
 CMakeFiles/test_rtcm.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_rtcm.dir/build.make CMakeFiles/test_rtcm.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_rtcm.dir/build.make CMakeFiles/test_rtcm.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/shyn/Desktop/c++/engineering/rtk/build/CMakeFiles --progress-num=9,10 "Built target test_rtcm"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/shyn/Desktop/c++/engineering/rtk/build/CMakeFiles --progress-num=13,14 "Built target test_rtcm"
 .PHONY : CMakeFiles/test_rtcm.dir/all
 
 # Build rule for subdir invocation for target.
@@ -146,7 +149,7 @@ test_rtcm: CMakeFiles/test_rtcm.dir/rule
 # codegen rule for target.
 CMakeFiles/test_rtcm.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_rtcm.dir/build.make CMakeFiles/test_rtcm.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/shyn/Desktop/c++/engineering/rtk/build/CMakeFiles --progress-num=9,10 "Finished codegen for target test_rtcm"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/shyn/Desktop/c++/engineering/rtk/build/CMakeFiles --progress-num=13,14 "Finished codegen for target test_rtcm"
 .PHONY : CMakeFiles/test_rtcm.dir/codegen
 
 # clean rule for target.
@@ -225,7 +228,7 @@ CMakeFiles/demo_kinematic.dir/clean:
 CMakeFiles/rtk_engine_pro.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/rtk_engine_pro.dir/build.make CMakeFiles/rtk_engine_pro.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/rtk_engine_pro.dir/build.make CMakeFiles/rtk_engine_pro.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/shyn/Desktop/c++/engineering/rtk/build/CMakeFiles --progress-num=7,8 "Built target rtk_engine_pro"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/shyn/Desktop/c++/engineering/rtk/build/CMakeFiles --progress-num=9,10 "Built target rtk_engine_pro"
 .PHONY : CMakeFiles/rtk_engine_pro.dir/all
 
 # Build rule for subdir invocation for target.
@@ -242,13 +245,45 @@ rtk_engine_pro: CMakeFiles/rtk_engine_pro.dir/rule
 # codegen rule for target.
 CMakeFiles/rtk_engine_pro.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/rtk_engine_pro.dir/build.make CMakeFiles/rtk_engine_pro.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/shyn/Desktop/c++/engineering/rtk/build/CMakeFiles --progress-num=7,8 "Finished codegen for target rtk_engine_pro"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/shyn/Desktop/c++/engineering/rtk/build/CMakeFiles --progress-num=9,10 "Finished codegen for target rtk_engine_pro"
 .PHONY : CMakeFiles/rtk_engine_pro.dir/codegen
 
 # clean rule for target.
 CMakeFiles/rtk_engine_pro.dir/clean:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/rtk_engine_pro.dir/build.make CMakeFiles/rtk_engine_pro.dir/clean
 .PHONY : CMakeFiles/rtk_engine_pro.dir/clean
+
+#=============================================================================
+# Target rules for target CMakeFiles/test_config.dir
+
+# All Build rule for target.
+CMakeFiles/test_config.dir/all:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_config.dir/build.make CMakeFiles/test_config.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_config.dir/build.make CMakeFiles/test_config.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/shyn/Desktop/c++/engineering/rtk/build/CMakeFiles --progress-num=11,12 "Built target test_config"
+.PHONY : CMakeFiles/test_config.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/test_config.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/shyn/Desktop/c++/engineering/rtk/build/CMakeFiles 2
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/test_config.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/shyn/Desktop/c++/engineering/rtk/build/CMakeFiles 0
+.PHONY : CMakeFiles/test_config.dir/rule
+
+# Convenience name for target.
+test_config: CMakeFiles/test_config.dir/rule
+.PHONY : test_config
+
+# codegen rule for target.
+CMakeFiles/test_config.dir/codegen:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_config.dir/build.make CMakeFiles/test_config.dir/codegen
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/shyn/Desktop/c++/engineering/rtk/build/CMakeFiles --progress-num=11,12 "Finished codegen for target test_config"
+.PHONY : CMakeFiles/test_config.dir/codegen
+
+# clean rule for target.
+CMakeFiles/test_config.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_config.dir/build.make CMakeFiles/test_config.dir/clean
+.PHONY : CMakeFiles/test_config.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.

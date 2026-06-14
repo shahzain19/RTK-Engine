@@ -94,7 +94,7 @@ public:
 
         // 12. Convert slant delay in seconds to distance error in meters
         double slant_delay_sec = F * I_vert;
-        return slant_delay_sec * SPEED_OF_LIGHT;
+        return slant_delay_sec * SPEED_OF_LIGHT();
     }
 };
 

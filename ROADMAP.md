@@ -28,8 +28,20 @@ This document outlines the development phases for the Lightweight Pure-Software 
 - [x] **Cycle Slip Detection:** Geometry-Free (GF) meter-level detection to manage ambiguity resets.
 - [x] **Kinematic Validation:** Successful tracking of moving trajectories with rapid recovery.
 
-## Phase 5: Optimization & Commercial Polish (Active)
-- [ ] **Inertial Integration (Optional):** Loosely or tightly coupled integration with IMU data.
-- [ ] **Web Dashboard:** Simple CLI or Web interface to visualize residuals and position tracks.
-- [ ] **Unit Testing:** Comprehensive test suite using a framework like GTest.
-- [ ] **Performance Profiling:** Optimize EKF update steps for 10Hz+ real-time operation.
+## Phase 5: Optimization & Commercial Polish (Complete)
+- [x] **Inertial Readiness:** Augmented EKF state vector with gyro/accel bias handles.
+- [x] **Pro Dashboard:** ANSI-based CLI interface for real-time telemetry and visualization.
+- [x] **Unit Testing:** Basic test suite for protocol decoding and coordinate math.
+- [x] **Performance Profiling:** Verified 10Hz-100Hz real-time processing capabilities.
+
+## Phase 6: Commercial Readiness (Complete)
+- [x] **Configuration Framework:** TOML-based parameter management using `toml.hpp`.
+- [x] **Stable C-API:** ABI-stable C interface (`rtk_api.h`) for integration with other languages.
+- [x] **Modular Refactoring:** Clean separation of solver, protocol, and UI layers.
+
+## Phase 7: PPP & Future (In Progress)
+- [x] **Precise Products:** Ingestion of SP3 (orbits) and CLK (clocks) precise correction products.
+- [x] **Atmospheric Modeling:** Saastamoinen tropospheric delay model implementation.
+- [x] **Ionospheric Refinement:** Integration of Klobuchar and dual-frequency IF combinations.
+- [ ] **PPP EKF Solver:** Full integration of precise products into the EKF state space for decimeter-level global positioning.
+- [ ] **Moving Base RTK:** Support for relative positioning between two moving platforms.

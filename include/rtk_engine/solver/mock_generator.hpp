@@ -93,11 +93,11 @@ public:
             double tropo_b = 2.31 / (std::sin(el_b_rad) + 0.05);
             double tropo_r = 2.31 / (std::sin(el_r_rad) + 0.05);
 
-            double f1 = GPS_L1_FREQ, f2 = GPS_L2_FREQ;
-            if (config.sys == Constellation::GALILEO) { f1 = GAL_E1_FREQ; f2 = GAL_E5B_FREQ; }
-            else if (config.sys == Constellation::GLONASS) { f1 = GLO_L1_BASE_FREQ; f2 = GLO_L2_BASE_FREQ; }
-            double lam1 = SPEED_OF_LIGHT / f1;
-            double lam2 = SPEED_OF_LIGHT / f2;
+            double f1 = GPS_L1_FREQ(), f2 = GPS_L2_FREQ();
+            if (config.sys == Constellation::GALILEO) { f1 = GAL_E1_FREQ(); f2 = GAL_E5B_FREQ(); }
+            else if (config.sys == Constellation::GLONASS) { f1 = GLO_L1_BASE_FREQ(); f2 = GLO_L2_BASE_FREQ(); }
+            double lam1 = SPEED_OF_LIGHT() / f1;
+            double lam2 = SPEED_OF_LIGHT() / f2;
 
             SatelliteObs b_sat; b_sat.svid = config.svid; b_sat.sys = config.sys; b_sat.elevation = el_b_rad; b_sat.azimuth = az_b_rad;
             SignalObs b1, b2;

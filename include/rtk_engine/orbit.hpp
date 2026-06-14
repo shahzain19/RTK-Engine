@@ -146,7 +146,7 @@ public:
         dt_s = eph.af0 + eph.af1 * tk_clock + eph.af2 * tk_clock * tk_clock;
         
         // Relativistic effect
-        dt_s += (2.0 * std::sqrt(gm * a) / (SPEED_OF_LIGHT * SPEED_OF_LIGHT)) * eph.e * sin_ek;
+        dt_s += (2.0 * std::sqrt(gm * a) / (SPEED_OF_LIGHT() * SPEED_OF_LIGHT())) * eph.e * sin_ek;
         dt_s -= eph.tgd;
 
         return Vector3(x, y, z);

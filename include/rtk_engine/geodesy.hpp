@@ -29,11 +29,11 @@ public:
         double sin_lon = std::sin(lon_rad);
         double cos_lon = std::cos(lon_rad);
 
-        double N = WGS84_A / std::sqrt(1.0 - WGS84_E_SQ * sin_lat * sin_lat);
+        double N = WGS84_A() / std::sqrt(1.0 - WGS84_E_SQ() * sin_lat * sin_lat);
 
         double X = (N + h_m) * cos_lat * cos_lon;
         double Y = (N + h_m) * cos_lat * sin_lon;
-        double Z = (N * (1.0 - WGS84_E_SQ) + h_m) * sin_lat;
+        double Z = (N * (1.0 - WGS84_E_SQ()) + h_m) * sin_lat;
 
         return Vector3(X, Y, Z);
     }
@@ -58,32 +58,32 @@ public:
             lon_rad = 0.0;
             if (Z > 0.0) {
                 lat_rad = M_PI_2;
-                h_m = Z - WGS84_B;
+                h_m = Z - WGS84_B();
             } else {
                 lat_rad = -M_PI_2;
-                h_m = -Z - WGS84_B;
+                h_m = -Z - WGS84_B();
             }
             return;
         }
 
-        double theta = std::atan2(Z * WGS84_A, p * WGS84_B);
+        double theta = std::atan2(Z * WGS84_A(), p * WGS84_B());
         double sin_theta = std::sin(theta);
         double cos_theta = std::cos(theta);
 
         lat_rad = std::atan2(
-            Z + WGS84_E_PRIME_SQ * WGS84_B * sin_theta * sin_theta * sin_theta,
-            p - WGS84_E_SQ * WGS84_A * cos_theta * cos_theta * cos_theta
+            Z + WGS84_E_PRIME_SQ() * WGS84_B() * sin_theta * sin_theta * sin_theta,
+            p - WGS84_E_SQ() * WGS84_A() * cos_theta * cos_theta * cos_theta
         );
 
         lon_rad = std::atan2(Y, X);
 
         double sin_lat = std::sin(lat_rad);
-        double N = WGS84_A / std::sqrt(1.0 - WGS84_E_SQ * sin_lat * sin_lat);
+        double N = WGS84_A() / std::sqrt(1.0 - WGS84_E_SQ() * sin_lat * sin_lat);
 
         if (std::abs(lat_rad) < M_PI / 4.0) {
             h_m = p / std::cos(lat_rad) - N;
         } else {
-            h_m = Z / std::sin(lat_rad) - N * (1.0 - WGS84_E_SQ);
+            h_m = Z / std::sin(lat_rad) - N * (1.0 - WGS84_E_SQ());
         }
     }
 

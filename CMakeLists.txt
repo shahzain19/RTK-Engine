@@ -8,7 +8,7 @@ find_package(Eigen3 REQUIRED)
 
 include_directories(include ${EIGEN3_INCLUDE_DIRS})
 
-add_executable(rtk_engine src/main.cpp)
+add_executable(rtk_engine src/main.cpp src/ppp_parser.cpp src/troposphere.cpp)
 target_link_libraries(rtk_engine Eigen3::Eigen)
 
 add_executable(test_rtcm src/test_rtcm.cpp)
@@ -22,3 +22,6 @@ target_link_libraries(demo_kinematic Eigen3::Eigen)
 
 add_executable(rtk_engine_pro src/rtk_engine_pro.cpp)
 target_link_libraries(rtk_engine_pro Eigen3::Eigen)
+
+add_executable(test_config tests/test_config.cpp)
+target_link_libraries(test_config Eigen3::Eigen)

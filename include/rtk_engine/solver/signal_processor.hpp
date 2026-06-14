@@ -31,7 +31,7 @@ public:
      */
     static void calculateWideLane(double phi1, double f1, double phi2, double f2, double& phi_wl, double& lam_wl) {
         phi_wl = phi1 - phi2;
-        lam_wl = SPEED_OF_LIGHT / (f1 - f2);
+        lam_wl = SPEED_OF_LIGHT() / (f1 - f2);
     }
 
     /**

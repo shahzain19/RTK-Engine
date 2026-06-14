@@ -145,13 +145,13 @@ public:
             sat.lock_time_l2 = br.read(7);
             sat.cnr_l2 = br.read(8) * 0.25;
 
-            double pr_l1 = pr_l1_raw * 0.02 + amb_l1 * SPEED_OF_LIGHT / 1000.0;
+            double pr_l1 = pr_l1_raw * 0.02 + amb_l1 * SPEED_OF_LIGHT() / 1000.0;
             sat.pseudorange_l1 = pr_l1;
-            sat.carrier_phase_l1 = (pr_l1 + cp_pr_l1_raw * 0.0005) / GPS_L1_WAVELENGTH;
+            sat.carrier_phase_l1 = (pr_l1 + cp_pr_l1_raw * 0.0005) / GPS_L1_WAVELENGTH();
             
             double pr_l2 = pr_l1 + pr_diff_l2_l1 * 0.02;
             sat.pseudorange_l2 = pr_l2;
-            constexpr double GPS_L2_WAVELENGTH = SPEED_OF_LIGHT / 1227.60e6;
+            const double GPS_L2_WAVELENGTH = SPEED_OF_LIGHT() / 1227.60e6;
             sat.carrier_phase_l2 = (pr_l1 + cp_pr_l2_raw * 0.0005) / GPS_L2_WAVELENGTH;
 
             out.sats.push_back(sat);
@@ -289,7 +289,7 @@ public:
             sat.svid = svids[i];
             sat.rough_range_ms = br.read(8);
             sat.rough_range_fine = br.read(10);
-            sat.rough_range = (sat.rough_range_ms + sat.rough_range_fine / 1024.0) * SPEED_OF_LIGHT / 1000.0;
+            sat.rough_range = (sat.rough_range_ms + sat.rough_range_fine / 1024.0) * SPEED_OF_LIGHT() / 1000.0;
             out.sats.push_back(sat);
         }
 
@@ -308,9 +308,9 @@ public:
                     br.read(1); // Half-cycle ambiguity
                     sig.snr = br.read(6);
 
-                    sig.pseudorange = out.sats[i].rough_range + pr_fine * SPEED_OF_LIGHT / (1024.0 * 512.0 * 1000.0);
+                    sig.pseudorange = out.sats[i].rough_range + pr_fine * SPEED_OF_LIGHT() / (1024.0 * 512.0 * 1000.0);
                     // For now, assume L1 wavelength for carrier phase conversion
-                    sig.carrier_phase = (out.sats[i].rough_range + cp_fine * SPEED_OF_LIGHT / (1024.0 * 512.0 * 1000.0)) / GPS_L1_WAVELENGTH;
+                    sig.carrier_phase = (out.sats[i].rough_range + cp_fine * SPEED_OF_LIGHT() / (1024.0 * 512.0 * 1000.0)) / GPS_L1_WAVELENGTH();
                     
                     out.cells.push_back(sig);
                 }

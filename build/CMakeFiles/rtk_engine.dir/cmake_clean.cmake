@@ -2,6 +2,10 @@ file(REMOVE_RECURSE
   "CMakeFiles/rtk_engine.dir/link.d"
   "CMakeFiles/rtk_engine.dir/src/main.cpp.o"
   "CMakeFiles/rtk_engine.dir/src/main.cpp.o.d"
+  "CMakeFiles/rtk_engine.dir/src/ppp_parser.cpp.o"
+  "CMakeFiles/rtk_engine.dir/src/ppp_parser.cpp.o.d"
+  "CMakeFiles/rtk_engine.dir/src/troposphere.cpp.o"
+  "CMakeFiles/rtk_engine.dir/src/troposphere.cpp.o.d"
   "rtk_engine"
   "rtk_engine.pdb"
 )
