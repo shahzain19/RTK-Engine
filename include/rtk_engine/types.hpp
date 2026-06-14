@@ -80,6 +80,15 @@ struct EpochObs {
     std::vector<SatelliteObs> sat_obs; ///< List of satellite observations
 };
 
+/**
+ * @brief Inertial measurement data (IMU).
+ */
+struct ImuMeas {
+    double t;                  ///< Measurement time (seconds)
+    Vector3 acc;               ///< Acceleration (m/s^2) in body frame (includes gravity)
+    Vector3 gyro;              ///< Angular rate (rad/s) in body frame
+};
+
 } // namespace rtk
 
 #endif // RTK_ENGINE_TYPES_HPP

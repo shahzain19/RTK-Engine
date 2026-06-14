@@ -31,8 +31,9 @@ public:
     // --- Phase 5.1: Inertial Readiness (Bias States) ---
     static constexpr int IDX_BG  = 10;  ///< Gyro Biases (10, 11, 12)
     static constexpr int IDX_BA  = 13;  ///< Accel Biases (13, 14, 15)
+    static constexpr int IDX_ATT = 16;  ///< Euler Angles: Roll, Pitch, Yaw (16, 17, 18)
     
-    static constexpr int BASE_STATE_SIZE = 16;
+    static constexpr int BASE_STATE_SIZE = 19;
 
     EkfFilter() : initialized_(false), last_time_(0.0) {
         state_ = Eigen::VectorXd::Zero(BASE_STATE_SIZE);
@@ -50,6 +51,7 @@ public:
         P_(IDX_IFB, IDX_IFB) = 1.0;
         P_.diagonal().segment<3>(IDX_BG).fill(1e-4);     
         P_.diagonal().segment<3>(IDX_BA).fill(1e-2);
+        P_.diagonal().segment<3>(IDX_ATT).fill(0.1);     
         
         last_time_ = gps_time;
         initialized_ = true;
@@ -57,24 +59,72 @@ public:
         prev_gf_obs_.clear();
     }
 
-    void predict(double current_time) {
+    /**
+     * @brief Propagates the state forward in time.
+     * @param current_time Target GPS time.
+     * @param imu Optional IMU measurement for inertial-driven prediction.
+     */
+    void predict(double current_time, const ImuMeas* imu = nullptr) {
         if (!initialized_) return;
         double dt = current_time - last_time_;
         if (dt < 1e-6) return;
 
         int n = state_.size();
         Eigen::MatrixXd F = Eigen::MatrixXd::Identity(n, n);
-        F.block<3, 3>(IDX_POS, IDX_VEL) = Eigen::Matrix3d::Identity() * dt;
-        F.block<3, 3>(IDX_POS, IDX_ACC) = Eigen::Matrix3d::Identity() * (0.5 * dt * dt);
-        F.block<3, 3>(IDX_VEL, IDX_ACC) = Eigen::Matrix3d::Identity() * dt;
+        
+        if (imu) {
+            // --- INS Prediction Path ---
+            const Eigen::Vector3d gyro = Eigen::Vector3d(imu->gyro.x, imu->gyro.y, imu->gyro.z);
+            const Eigen::Vector3d acc_body = Eigen::Vector3d(imu->acc.x, imu->acc.y, imu->acc.z);
+            
+            const Eigen::Vector3d bg = state_.segment<3>(IDX_BG);
+            const Eigen::Vector3d ba = state_.segment<3>(IDX_BA);
+            const Eigen::Vector3d att = state_.segment<3>(IDX_ATT);
+            const Eigen::Vector3d pos = state_.segment<3>(IDX_POS);
+            const Eigen::Vector3d vel = state_.segment<3>(IDX_VEL);
 
-        state_ = F * state_;
+            // 1. Update Attitude (Body -> Navigation/ENU)
+            Eigen::Vector3d gyro_corr = gyro - bg;
+            state_.segment<3>(IDX_ATT) += gyro_corr * dt;
+
+            // 2. Rotate Acceleration to ECEF
+            // For simplicity in this demo, we use a basic ENU-based rotation
+            // and then transform to ECEF using Geodesy
+            Eigen::Matrix3d R_b2n = eulerToRotationMatrix(state_(IDX_ATT), state_(IDX_ATT+1), state_(IDX_ATT+2));
+            
+            // Get ENU to ECEF rotation at current position
+            Eigen::Matrix3d R_n2e = getEnuToEcefMatrix(pos);
+            Eigen::Matrix3d R_b2e = R_n2e * R_b2n;
+
+            Eigen::Vector3d acc_corr = acc_body - ba;
+            Eigen::Vector3d acc_ecef = R_b2e * acc_corr;
+
+            // 3. Subtract Gravity in ECEF
+            Eigen::Vector3d gravity_ecef = -pos.normalized() * GRAVITY();
+            Eigen::Vector3d acc_net = acc_ecef + gravity_ecef;
+
+            // 4. Update Position and Velocity
+            state_.segment<3>(IDX_POS) += vel * dt + 0.5 * acc_net * dt * dt;
+            state_.segment<3>(IDX_VEL) += acc_net * dt;
+            state_.segment<3>(IDX_ACC) = acc_net; // Store net acceleration
+
+            // 5. Build Transition Matrix F for Covariance Propagation
+            F.block<3, 3>(IDX_POS, IDX_VEL) = Eigen::Matrix3d::Identity() * dt;
+            F.block<3, 3>(IDX_VEL, IDX_ATT) = -R_b2e * skewSymmetric(acc_corr) * dt;
+        } else {
+            // --- Constant Acceleration Fallback ---
+            F.block<3, 3>(IDX_POS, IDX_VEL) = Eigen::Matrix3d::Identity() * dt;
+            F.block<3, 3>(IDX_POS, IDX_ACC) = Eigen::Matrix3d::Identity() * (0.5 * dt * dt);
+            F.block<3, 3>(IDX_VEL, IDX_ACC) = Eigen::Matrix3d::Identity() * dt;
+            state_ = F * state_;
+        }
 
         Eigen::MatrixXd Q = Eigen::MatrixXd::Zero(n, n);
         double q_acc = 15.0; 
         Q.block<3, 3>(IDX_ACC, IDX_ACC) = Eigen::Matrix3d::Identity() * q_acc * dt;
         Q.diagonal().segment<3>(IDX_BG).fill(1e-8 * dt);
         Q.diagonal().segment<3>(IDX_BA).fill(1e-6 * dt);
+        Q.diagonal().segment<3>(IDX_ATT).fill(1e-5 * dt);
         if (n > BASE_STATE_SIZE) Q.diagonal().tail(n - BASE_STATE_SIZE).fill(1e-6 * dt);
 
         P_ = F * P_ * F.transpose() + Q;
@@ -220,6 +270,38 @@ private:
     Eigen::MatrixXd P_;
     std::map<int, int> svid_to_idx_;
     std::map<int, double> prev_gf_obs_;
+
+    /** @brief Helper to convert Euler angles (R, P, Y in rad) to 3x3 rotation matrix. */
+    Eigen::Matrix3d eulerToRotationMatrix(double r, double p, double y) {
+        Eigen::AngleAxisd rollAngle(r, Eigen::Vector3d::UnitX());
+        Eigen::AngleAxisd pitchAngle(p, Eigen::Vector3d::UnitY());
+        Eigen::AngleAxisd yawAngle(y, Eigen::Vector3d::UnitZ());
+        return (yawAngle * pitchAngle * rollAngle).toRotationMatrix();
+    }
+
+    /** @brief Helper to get ENU to ECEF rotation matrix at a given ECEF position. */
+    Eigen::Matrix3d getEnuToEcefMatrix(const Eigen::Vector3d& pos_ecef) {
+        double lat, lon, h;
+        Geodesy::ecefToGeodetic(Vector3(pos_ecef.x(), pos_ecef.y(), pos_ecef.z()), lat, lon, h);
+        
+        double sL = std::sin(lat), cL = std::cos(lat);
+        double sG = std::sin(lon), cG = std::cos(lon);
+
+        Eigen::Matrix3d R;
+        R << -sG, -sL*cG, cL*cG,
+              cG, -sL*sG, cL*sG,
+              0.0,   cL,    sL;
+        return R;
+    }
+
+    /** @brief Helper for skew-symmetric matrix. */
+    Eigen::Matrix3d skewSymmetric(const Eigen::Vector3d& v) {
+        Eigen::Matrix3d m;
+        m <<  0,  -v.z(),  v.y(),
+            v.z(),   0,   -v.x(),
+           -v.y(),  v.x(),   0;
+        return m;
+    }
 
     void addState(double val, double var) {
         int n = state_.size();

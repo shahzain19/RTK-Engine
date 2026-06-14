@@ -38,21 +38,37 @@ int main() {
         double angle = (t * 10.0) * M_PI / 180.0;
         rtk::Vector3 true_enu(15.0 * std::cos(angle), 15.0 * std::sin(angle), 0.0);
         rtk::Vector3 true_ecef = rtk::Geodesy::enuToEcef(true_enu, base_ecef);
+        
+        // True dynamics for IMU generation
+        rtk::Vector3 true_vel_enu(-150.0 * M_PI / 180.0 * std::sin(angle), 150.0 * M_PI / 180.0 * std::cos(angle), 0.0);
+        rtk::Vector3 true_acc_enu(-1500.0 * (M_PI/180.0)*(M_PI/180.0) * std::cos(angle), -1500.0 * (M_PI/180.0)*(M_PI/180.0) * std::sin(angle), 0.0);
+        rtk::Vector3 true_att(0.0, 0.0, angle);
 
-        // Observations
+        // 1. Observations
         rtk::EpochObs b_obs, r_obs;
         rtk::MockGenerator::generateMockObservations(base_ecef, true_ecef, t, b_obs, r_obs);
 
-        // EKF Update
-        ekf.predict(t);
+        // 2. IMU Generation
+        rtk::ImuMeas imu;
+        rtk::MockGenerator::generateMockImu(true_ecef, true_vel_enu, true_acc_enu, true_att, t, imu);
+
+        // 3. EKF Predict & Update
+        ekf.predict(t, &imu);
         ekf.update(b_obs, r_obs, sat_positions);
         
-        rtk::Vector3 ekf_ecef(ekf.getState()(0), ekf.getState()(1), ekf.getState()(2));
+        rtk::Vector3 ekf_ecef(ekf.getState()(rtk::EkfFilter::IDX_POS), 
+                              ekf.getState()(rtk::EkfFilter::IDX_POS+1), 
+                              ekf.getState()(rtk::EkfFilter::IDX_POS+2));
         rtk::Vector3 cur_enu = rtk::Geodesy::ecefToEnu(ekf_ecef, base_ecef);
+        
+        rtk::Vector3 att_deg(ekf.getState()(rtk::EkfFilter::IDX_ATT) * 180.0 / M_PI,
+                             ekf.getState()(rtk::EkfFilter::IDX_ATT+1) * 180.0 / M_PI,
+                             ekf.getState()(rtk::EkfFilter::IDX_ATT+2) * 180.0 / M_PI);
+        
         double err = (cur_enu - true_enu).norm();
 
-        // Render Telemetry
-        db.render(t, cur_enu, err, r_obs.sat_obs, "RTK FLOAT");
+        // 4. Render Telemetry
+        db.render(t, cur_enu, err, r_obs.sat_obs, "INS/GNSS FUSION", att_deg);
 
         auto end_time = std::chrono::high_resolution_clock::now();
         auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);

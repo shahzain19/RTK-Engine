@@ -19,6 +19,7 @@ inline double get_config_double(const std::string& key, double default_val) {
 /** @name Physical Constants */
 ///@{
 inline double SPEED_OF_LIGHT() { return get_config_double("physics.speed_of_light", 299792458.0); }
+inline double GRAVITY() { return get_config_double("physics.gravity", 9.80665); }
 ///@}
 
 /** @name GPS Frequencies */

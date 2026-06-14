@@ -40,7 +40,8 @@ public:
     /**
      * @brief Renders the full commercial dashboard.
      */
-    void render(double t, const Vector3& enu, double err, const std::vector<SatelliteObs>& sats, const std::string& mode) {
+    void render(double t, const Vector3& enu, double err, const std::vector<SatelliteObs>& sats, 
+                const std::string& mode, const Vector3& att_deg = Vector3(0,0,0)) {
         std::cout << "\033[H"; // Move to top
         std::cout << "========================================================================\n";
         std::cout << "        GEMINI-RTK PRO: COMMERCIAL KINEMATIC CONSOLE                   \n";
@@ -51,6 +52,7 @@ public:
         std::cout << "MODE: \033[1;32m" << std::setw(10) << mode << "\033[0m | ";
         std::cout << "3D ERR: \033[1;33m" << std::setprecision(3) << std::setw(6) << err << "m\033[0m\n";
         std::cout << "  POS ENU: E: " << std::setw(7) << enu.x << " N: " << std::setw(7) << enu.y << " U: " << std::setw(7) << enu.z << "\n";
+        std::cout << "  ATT DEG: R: " << std::setw(7) << att_deg.x << " P: " << std::setw(7) << att_deg.y << " Y: " << std::setw(7) << att_deg.z << "\n";
         std::cout << "------------------------------------------------------------------------\n";
 
         // Satellite Tracking Table

@@ -138,6 +138,37 @@ public:
         }
         return pos;
     }
+
+    /**
+     * @brief Generates synthetic IMU measurements based on true trajectory.
+     */
+    static void generateMockImu(const Vector3& pos_ecef, const Vector3& vel_ecef, const Vector3& acc_ecef,
+                                const Vector3& att_euler_rad, double t, ImuMeas& imu) {
+        imu.t = t;
+
+        // Rotation from ECEF to Body (approximate via ENU)
+        double lat, lon, h;
+        Geodesy::ecefToGeodetic(pos_ecef, lat, lon, h);
+        
+        // Use a simplified rotation for the mock
+        // acc_body = R_n2b * (R_e2n * (acc_ecef - gravity_ecef))
+        Vector3 gravity_ecef = -pos_ecef.normalized() * GRAVITY();
+        Vector3 acc_net_ecef = acc_ecef - gravity_ecef;
+        
+        // Simple mock: assume body is aligned with ENU for now, or use att_euler
+        // This is just to provide "reasonable" numbers for the demo
+        imu.acc = Vector3(
+            acc_net_ecef.x + generateGaussianNoise(0, 0.05) + 0.01, // 0.01 bias
+            acc_net_ecef.y + generateGaussianNoise(0, 0.05) - 0.02,
+            acc_net_ecef.z + generateGaussianNoise(0, 0.05)
+        );
+
+        imu.gyro = Vector3(
+            generateGaussianNoise(0, 0.001) + 0.0001, 
+            generateGaussianNoise(0, 0.001), 
+            0.1 + generateGaussianNoise(0, 0.001) // 0.1 rad/s yaw rate for circular motion
+        );
+    }
 };
 
 } // namespace rtk
