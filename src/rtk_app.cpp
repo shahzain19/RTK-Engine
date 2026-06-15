@@ -20,7 +20,7 @@ RtkEngineApp::~RtkEngineApp() {
     stop();
 }
 
-bool RtkEngineApp::start(const std::string& config_path) {
+bool RtkEngineApp::start(const std::string& config_path, bool background) {
     auto& cfg = rtk_engine::ConfigManager::instance();
     if (!cfg.load(config_path)) {
         std::cerr << "[APP] Error: Could not load config " << config_path << "\n";
@@ -76,13 +76,43 @@ bool RtkEngineApp::start(const std::string& config_path) {
     ekf_.initialize(init_pos, 0.0);
 
     running_ = true;
-    run();
+    if (background) {
+        worker_thread_ = std::make_unique<std::thread>(&RtkEngineApp::run, this);
+    } else {
+        run();
+    }
     
     return true;
 }
 
 void RtkEngineApp::stop() {
     running_ = false;
+    if (worker_thread_ && worker_thread_->joinable()) {
+        worker_thread_->join();
+    }
+}
+
+void RtkEngineApp::feedRoverData(const uint8_t* data, size_t len) {
+    std::lock_guard<std::mutex> lock(data_mutex_);
+    auto frames = rover_parser_.parseStream(data, len);
+    // Process frames immediately or store for next run() cycle
+}
+
+void RtkEngineApp::injectImu(const rtk_imu_t& imu) {
+    ImuMeas m;
+    m.t = imu.timestamp;
+    m.acc = Vector3(imu.acc[0], imu.acc[1], imu.acc[2]);
+    m.gyro = Vector3(imu.gyro[0], imu.gyro[1], imu.gyro[2]);
+    
+    std::lock_guard<std::mutex> lock(data_mutex_);
+    ekf_.predict(imu.timestamp, &m);
+}
+
+bool RtkEngineApp::getLatestSolution(rtk_solution_t& sol) {
+    std::lock_guard<std::mutex> lock(data_mutex_);
+    if (latest_sol_.timestamp == 0) return false;
+    sol = latest_sol_;
+    return true;
 }
 
 void RtkEngineApp::run() {
@@ -101,51 +131,69 @@ void RtkEngineApp::run() {
         t += 0.1;
 
         // Process Data
-        processBaseData();
-        processRoverData();
+        {
+            std::lock_guard<std::mutex> lock(data_mutex_);
+            processBaseData();
+            processRoverData();
 
-        if (last_base_obs_.sat_obs.size() >= 4 && last_rover_obs_.sat_obs.size() >= 4) {
-            
-            // IMU Fusion (Simple circular motion mock for demo)
-            ImuMeas imu;
-            double angle = (t * 10.0) * M_PI / 180.0;
-            imu.t = t;
-            imu.acc = Vector3(-1.5 * std::cos(angle), -1.5 * std::sin(angle), 9.81);
-            imu.gyro = Vector3(0, 0, 0.1);
+            if (last_base_obs_.sat_obs.size() >= 4 && last_rover_obs_.sat_obs.size() >= 4) {
+                
+                // IMU Fusion (Simple circular motion mock for demo)
+                ImuMeas imu;
+                double angle = (t * 10.0) * M_PI / 180.0;
+                imu.t = t;
+                imu.acc = Vector3(-1.5 * std::cos(angle), -1.5 * std::sin(angle), 9.81);
+                imu.gyro = Vector3(0, 0, 0.1);
 
-            ekf_.predict(t, &imu);
-            
-            if (sat_positions_.empty() || sat_positions_.size() < last_base_obs_.sat_obs.size()) {
-                sat_positions_ = MockGenerator::precomputeSatPositions(last_base_obs_.ref_pos);
+                ekf_.predict(t, &imu);
+                
+                if (sat_positions_.empty() || sat_positions_.size() < last_base_obs_.sat_obs.size()) {
+                    sat_positions_ = MockGenerator::precomputeSatPositions(last_base_obs_.ref_pos);
+                }
+
+                ekf_.update(last_base_obs_, last_rover_obs_, sat_positions_);
+                
+                const Eigen::VectorXd& state = ekf_.getState();
+                Vector3 ekf_ecef(state(EkfFilter::IDX_POS), state(EkfFilter::IDX_POS+1), state(EkfFilter::IDX_POS+2));
+                Vector3 cur_enu = Geodesy::ecefToEnu(ekf_ecef, last_base_obs_.ref_pos);
+                Vector3 att_deg(state(EkfFilter::IDX_ATT) * 180.0 / M_PI,
+                                state(EkfFilter::IDX_ATT+1) * 180.0 / M_PI,
+                                state(EkfFilter::IDX_ATT+2) * 180.0 / M_PI);
+
+                double lat, lon, alt;
+                Geodesy::ecefToGeodetic(ekf_ecef, lat, lon, alt);
+
+                // Update latest_sol for C-API
+                latest_sol_.timestamp = t;
+                latest_sol_.lat = lat * 180.0 / M_PI;
+                latest_sol_.lon = lon * 180.0 / M_PI;
+                latest_sol_.alt = alt;
+                latest_sol_.roll = att_deg.x;
+                latest_sol_.pitch = att_deg.y;
+                latest_sol_.yaw = att_deg.z;
+                latest_sol_.fix_type = 4; // Mocking RTK Fixed
+                latest_sol_.num_sats = last_rover_obs_.sat_obs.size();
+
+                Vector3 true_enu(15.0 * std::cos(angle), 15.0 * std::sin(angle), 0.0);
+                double err = (cur_enu - true_enu).norm();
+
+                // Render Telemetry
+                dashboard_.render(t, cur_enu, err, last_rover_obs_.sat_obs, "INS/GNSS", att_deg);
+
+                // NMEA Output
+                auto& cfg = rtk_engine::ConfigManager::instance();
+                if (cfg.get<bool>("output.enabled", false)) {
+                    if (cfg.get<std::string>("output.format") == "nmea") {
+                        std::string nmea = NmeaFormatter::formatGGA(t, cur_enu, last_rover_obs_.sat_obs.size());
+                        std::cout << nmea << std::endl;
+                    } else if (rinex_writer_) {
+                        rinex_writer_->writeEpoch(t, last_rover_obs_.sat_obs);
+                    }
+                }
+            } else {
+                dashboard_.render(t, Vector3(0,0,0), 0.0, {}, "WAITING DATA", Vector3(0,0,0));
             }
-
-            ekf_.update(last_base_obs_, last_rover_obs_, sat_positions_);
-            
-            const Eigen::VectorXd& state = ekf_.getState();
-            Vector3 ekf_ecef(state(EkfFilter::IDX_POS), state(EkfFilter::IDX_POS+1), state(EkfFilter::IDX_POS+2));
-            Vector3 cur_enu = Geodesy::ecefToEnu(ekf_ecef, last_base_obs_.ref_pos);
-            Vector3 att_deg(state(EkfFilter::IDX_ATT) * 180.0 / M_PI,
-                            state(EkfFilter::IDX_ATT+1) * 180.0 / M_PI,
-                            state(EkfFilter::IDX_ATT+2) * 180.0 / M_PI);
-
-            Vector3 true_enu(15.0 * std::cos(angle), 15.0 * std::sin(angle), 0.0);
-            double err = (cur_enu - true_enu).norm();
-// Render Telemetry
-dashboard_.render(t, cur_enu, err, last_rover_obs_.sat_obs, "INS/GNSS", att_deg);
-
-// NMEA Output
-auto& cfg = rtk_engine::ConfigManager::instance();
-if (cfg.get<bool>("output.enabled", false)) {
-    if (cfg.get<std::string>("output.format") == "nmea") {
-        std::string nmea = NmeaFormatter::formatGGA(t, cur_enu, last_rover_obs_.sat_obs.size());
-        std::cout << nmea << std::endl;
-    } else if (rinex_writer_) {
-        rinex_writer_->writeEpoch(t, last_rover_obs_.sat_obs);
-    }
-}
-} else {
-dashboard_.render(t, Vector3(0,0,0), 0.0, {}, "WAITING DATA", Vector3(0,0,0));
-}
+        }
     }
 }
 
