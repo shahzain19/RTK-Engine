@@ -7,6 +7,18 @@ mountpoint = "BASE1"
 user = "user"
 password = "password"
 
+[rover]
+file = "" # Path to RINEX observation file
+
+[serial]
+port = "" # /dev/ttyUSB0
+baud_rate = 115200
+
+[output]
+enabled = false
+format = "nmea" # nmea or rinex
+destination = "stdout" # stdout, file, or port
+
 [initial]
 lat = 37.422
 lon = -122.084

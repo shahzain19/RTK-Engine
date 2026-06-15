@@ -13,6 +13,8 @@ The engine has been significantly enhanced with production-grade usability, conf
 - **Commercial CLI Dashboard:** Real-time ANSI-based telemetry visualization for solution status, satellite tracking, and residual monitoring.
 - **Inertial Readiness:** EKF state vector augmented with Gyroscope and Accelerometer bias handles for future IMU integration.
 - **PPP Infrastructure:** Parsers for precise SP3 (orbit) and CLK (clock) correction products, and atmospheric modeling (Saastamoinen tropospheric model).
+- **Robust Ingestion:** NTRIP client with robust connection handling and serial port support for hardware receivers.
+- **Interoperability Output:** NMEA streaming for real-time positioning and RINEX logging for post-processing.
 
 ### New Modular Architecture
 
@@ -23,6 +25,8 @@ The engine is organized into specialized, fully-documented modules:
   - `rtk_api.h`: Stable C interface.
   - `ppp_parser.hpp`: Ingestion of precise SP3/CLK products.
   - `troposphere.hpp`: Atmospheric delay modeling.
+  - `io/`: Serial port ingestion.
+  - `output/`: NMEA formatter and RINEX writer.
   - `ui/dashboard.hpp`: ANSI-based CLI visualization.
   - `math/`: Core linear algebra using **Eigen** for dynamic scaling and performance.
   - `rtcm3/`: Binary protocol decoding for Legacy (1004, 1005, 1019, 1020) & MSM messages.

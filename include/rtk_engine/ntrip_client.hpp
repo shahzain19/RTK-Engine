@@ -53,6 +53,9 @@ public:
         socket_fd_ = socket(AF_INET, SOCK_STREAM, 0);
         if (socket_fd_ < 0) return false;
 
+        // Set non-blocking to allow timeout
+        fcntl(socket_fd_, F_SETFL, O_NONBLOCK);
+
         struct sockaddr_in serv_addr;
         std::memset(&serv_addr, 0, sizeof(serv_addr));
         serv_addr.sin_family = AF_INET;
@@ -60,11 +63,26 @@ public:
         serv_addr.sin_port = htons(config_.port);
 
         if (::connect(socket_fd_, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) < 0) {
-            std::cerr << "[NTRIP] Connection failed to " << config_.host << ":" << config_.port << "\n";
-            close(socket_fd_);
-            socket_fd_ = -1;
+            if (errno != EINPROGRESS) {
+                std::cerr << "[NTRIP] Connection failed to " << config_.host << ":" << config_.port << "\n";
+                close(socket_fd_);
+                socket_fd_ = -1;
+                return false;
+            }
+        }
+
+        // Wait for connection
+        fd_set write_fds;
+        FD_ZERO(&write_fds);
+        FD_SET(socket_fd_, &write_fds);
+        struct timeval tv = {5, 0};
+        if (select(socket_fd_ + 1, nullptr, &write_fds, nullptr, &tv) <= 0) {
+            disconnect();
             return false;
         }
+        
+        // Set back to blocking
+        fcntl(socket_fd_, F_SETFL, 0);
 
         // Send NTRIP GET Request
         std::string auth = base64Encode(config_.user + ":" + config_.password);
@@ -79,8 +97,8 @@ public:
             return false;
         }
 
-        // Wait for ICY 200 OK (the standard NTRIP success response)
-        char buffer[1024];
+        // Wait for ICY 200 OK
+        char buffer[2048];
         int n = recv(socket_fd_, buffer, sizeof(buffer) - 1, 0);
         if (n <= 0) {
             disconnect();
@@ -88,7 +106,8 @@ public:
         }
         buffer[n] = '\0';
         std::string response(buffer);
-        if (response.find("ICY 200 OK") == std::string::npos && response.find("HTTP/1.0 200 OK") == std::string::npos) {
+        
+        if (response.find("200 OK") == std::string::npos) {
             std::cerr << "[NTRIP] Server rejected request: " << response << "\n";
             disconnect();
             return false;

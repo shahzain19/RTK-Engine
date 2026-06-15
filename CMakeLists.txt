@@ -28,3 +28,9 @@ target_link_libraries(rtk_tool Eigen3::Eigen)
 
 add_executable(test_config tests/test_config.cpp)
 target_link_libraries(test_config Eigen3::Eigen)
+
+add_executable(test_rover_config tests/test_rover_config.cpp)
+target_link_libraries(test_rover_config Eigen3::Eigen)
+
+add_executable(test_ntrip tests/test_ntrip.cpp)
+target_link_libraries(test_ntrip Eigen3::Eigen)

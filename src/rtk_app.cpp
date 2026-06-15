@@ -7,6 +7,7 @@
 #include "rtk_engine/solver/mock_generator.hpp"
 #include "rtk_engine/ephemeris_pool.hpp"
 #include "rtk_engine/geodesy.hpp"
+#include "rtk_engine/rinex.hpp" // Added
 #include <thread>
 #include <chrono>
 #include <iostream>
@@ -41,6 +42,29 @@ bool RtkEngineApp::start(const std::string& config_path) {
             std::cerr << "[APP] Warning: NTRIP failed. Falling back to mock data.\n";
             ntrip_client_.reset();
         }
+    }
+
+    // Load Rover File
+    std::string rover_file = cfg.get<std::string>("rover.file");
+    if (!rover_file.empty()) {
+        if (!rinex_parser_.parseObsFile(rover_file, rover_obs_file_)) {
+            std::cerr << "[APP] Warning: Could not load rover file " << rover_file << "\n";
+        }
+    }
+
+    // Initialize Serial Port
+    std::string serial_port = cfg.get<std::string>("serial.port");
+    if (!serial_port.empty()) {
+        serial_reader_ = std::make_unique<SerialReader>(serial_port, cfg.get<int>("serial.baud_rate", 115200));
+        if (!serial_reader_->connect()) {
+            std::cerr << "[APP] Warning: Serial port failed to open.\n";
+            serial_reader_.reset();
+        }
+    }
+
+    // Initialize RINEX Logger
+    if (cfg.get<std::string>("output.format") == "rinex") {
+        rinex_writer_ = std::make_unique<RinexWriter>("output.obs");
     }
 
     // 2. Initialize Solver
@@ -106,11 +130,22 @@ void RtkEngineApp::run() {
 
             Vector3 true_enu(15.0 * std::cos(angle), 15.0 * std::sin(angle), 0.0);
             double err = (cur_enu - true_enu).norm();
+// Render Telemetry
+dashboard_.render(t, cur_enu, err, last_rover_obs_.sat_obs, "INS/GNSS", att_deg);
 
-            dashboard_.render(t, cur_enu, err, last_rover_obs_.sat_obs, "INS/GNSS", att_deg);
-        } else {
-            dashboard_.render(t, Vector3(0,0,0), 0.0, {}, "WAITING DATA", Vector3(0,0,0));
-        }
+// NMEA Output
+auto& cfg = rtk_engine::ConfigManager::instance();
+if (cfg.get<bool>("output.enabled", false)) {
+    if (cfg.get<std::string>("output.format") == "nmea") {
+        std::string nmea = NmeaFormatter::formatGGA(t, cur_enu, last_rover_obs_.sat_obs.size());
+        std::cout << nmea << std::endl;
+    } else if (rinex_writer_) {
+        rinex_writer_->writeEpoch(t, last_rover_obs_.sat_obs);
+    }
+}
+} else {
+dashboard_.render(t, Vector3(0,0,0), 0.0, {}, "WAITING DATA", Vector3(0,0,0));
+}
     }
 }
 
@@ -159,6 +194,32 @@ void RtkEngineApp::processBaseData() {
 }
 
 void RtkEngineApp::processRoverData() {
+    if (serial_reader_) {
+        uint8_t buffer[1024];
+        int n = serial_reader_->read(buffer, sizeof(buffer));
+        if (n > 0) {
+            // TODO: Parse raw GNSS data (e.g., NMEA/RTCM3) from serial buffer
+            // For now, just logging activity
+            std::cout << "[IO] Read " << n << " bytes from serial.\n";
+        }
+        return;
+    }
+
+    if (!rover_obs_file_.empty() && rover_obs_idx_ < rover_obs_file_.size()) {
+        const auto& obs = rover_obs_file_[rover_obs_idx_++];
+        
+        last_rover_obs_.sat_obs.clear();
+        for (const auto& [sat_id, data] : obs.sat_data) {
+            SatelliteObs sat;
+            sat.svid = std::stoi(sat_id.substr(1));
+            // Basic mapping - assume C1C for L1 pseudorange
+            if (data.count("C1C")) sat.pseudorange = data.at("C1C");
+            
+            last_rover_obs_.sat_obs.push_back(sat);
+        }
+        return;
+    }
+
     Vector3 base_ecef = last_base_obs_.ref_pos;
     if (base_ecef.norm() < 1e6) return;
 
