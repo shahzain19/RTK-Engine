@@ -207,6 +207,32 @@ test_config/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_config.dir/build.make CMakeFiles/test_config.dir/build
 .PHONY : test_config/fast
 
+#=============================================================================
+# Target rules for targets named test_rover_config
+
+# Build rule for target.
+test_rover_config: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_rover_config
+.PHONY : test_rover_config
+
+# fast build rule for target.
+test_rover_config/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_rover_config.dir/build.make CMakeFiles/test_rover_config.dir/build
+.PHONY : test_rover_config/fast
+
+#=============================================================================
+# Target rules for targets named test_ntrip
+
+# Build rule for target.
+test_ntrip: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_ntrip
+.PHONY : test_ntrip
+
+# fast build rule for target.
+test_ntrip/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_ntrip.dir/build.make CMakeFiles/test_ntrip.dir/build
+.PHONY : test_ntrip/fast
+
 src/demo_kinematic.o: src/demo_kinematic.cpp.o
 .PHONY : src/demo_kinematic.o
 
@@ -453,6 +479,54 @@ tests/test_config.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_config.dir/build.make CMakeFiles/test_config.dir/tests/test_config.cpp.s
 .PHONY : tests/test_config.cpp.s
 
+tests/test_ntrip.o: tests/test_ntrip.cpp.o
+.PHONY : tests/test_ntrip.o
+
+# target to build an object file
+tests/test_ntrip.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_ntrip.dir/build.make CMakeFiles/test_ntrip.dir/tests/test_ntrip.cpp.o
+.PHONY : tests/test_ntrip.cpp.o
+
+tests/test_ntrip.i: tests/test_ntrip.cpp.i
+.PHONY : tests/test_ntrip.i
+
+# target to preprocess a source file
+tests/test_ntrip.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_ntrip.dir/build.make CMakeFiles/test_ntrip.dir/tests/test_ntrip.cpp.i
+.PHONY : tests/test_ntrip.cpp.i
+
+tests/test_ntrip.s: tests/test_ntrip.cpp.s
+.PHONY : tests/test_ntrip.s
+
+# target to generate assembly for a file
+tests/test_ntrip.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_ntrip.dir/build.make CMakeFiles/test_ntrip.dir/tests/test_ntrip.cpp.s
+.PHONY : tests/test_ntrip.cpp.s
+
+tests/test_rover_config.o: tests/test_rover_config.cpp.o
+.PHONY : tests/test_rover_config.o
+
+# target to build an object file
+tests/test_rover_config.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_rover_config.dir/build.make CMakeFiles/test_rover_config.dir/tests/test_rover_config.cpp.o
+.PHONY : tests/test_rover_config.cpp.o
+
+tests/test_rover_config.i: tests/test_rover_config.cpp.i
+.PHONY : tests/test_rover_config.i
+
+# target to preprocess a source file
+tests/test_rover_config.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_rover_config.dir/build.make CMakeFiles/test_rover_config.dir/tests/test_rover_config.cpp.i
+.PHONY : tests/test_rover_config.cpp.i
+
+tests/test_rover_config.s: tests/test_rover_config.cpp.s
+.PHONY : tests/test_rover_config.s
+
+# target to generate assembly for a file
+tests/test_rover_config.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_rover_config.dir/build.make CMakeFiles/test_rover_config.dir/tests/test_rover_config.cpp.s
+.PHONY : tests/test_rover_config.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -467,6 +541,8 @@ help:
 	@echo "... rtk_engine_pro"
 	@echo "... rtk_tool"
 	@echo "... test_config"
+	@echo "... test_ntrip"
+	@echo "... test_rover_config"
 	@echo "... test_rtcm"
 	@echo "... src/demo_kinematic.o"
 	@echo "... src/demo_kinematic.i"
@@ -498,6 +574,12 @@ help:
 	@echo "... tests/test_config.o"
 	@echo "... tests/test_config.i"
 	@echo "... tests/test_config.s"
+	@echo "... tests/test_ntrip.o"
+	@echo "... tests/test_ntrip.i"
+	@echo "... tests/test_ntrip.s"
+	@echo "... tests/test_rover_config.o"
+	@echo "... tests/test_rover_config.i"
+	@echo "... tests/test_rover_config.s"
 .PHONY : help
 
 

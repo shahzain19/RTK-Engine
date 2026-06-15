@@ -5,5 +5,7 @@
 /home/shyn/Desktop/c++/engineering/rtk/build/CMakeFiles/rtk_engine_pro.dir
 /home/shyn/Desktop/c++/engineering/rtk/build/CMakeFiles/rtk_tool.dir
 /home/shyn/Desktop/c++/engineering/rtk/build/CMakeFiles/test_config.dir
+/home/shyn/Desktop/c++/engineering/rtk/build/CMakeFiles/test_rover_config.dir
+/home/shyn/Desktop/c++/engineering/rtk/build/CMakeFiles/test_ntrip.dir
 /home/shyn/Desktop/c++/engineering/rtk/build/CMakeFiles/edit_cache.dir
 /home/shyn/Desktop/c++/engineering/rtk/build/CMakeFiles/rebuild_cache.dir

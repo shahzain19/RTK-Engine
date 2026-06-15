@@ -57,4 +57,6 @@ set(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/rtk_engine_pro.dir/DependInfo.cmake"
   "CMakeFiles/rtk_tool.dir/DependInfo.cmake"
   "CMakeFiles/test_config.dir/DependInfo.cmake"
+  "CMakeFiles/test_rover_config.dir/DependInfo.cmake"
+  "CMakeFiles/test_ntrip.dir/DependInfo.cmake"
   )

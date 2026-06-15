@@ -1,0 +1,20 @@
+[ntrip]
+host = "" 
+port = 2101
+mountpoint = "BASE1"
+user = "user"
+password = "password"
+
+[serial]
+port = "" 
+baud_rate = 115200
+
+[output]
+enabled = true
+format = "nmea"
+destination = "stdout"
+
+[initial]
+lat = 37.422
+lon = -122.084
+alt = 30.0
