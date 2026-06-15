@@ -59,6 +59,12 @@ The engine is organized into specialized, fully-documented modules:
   - Stable C-API for external integration.
   - Foundation for PPP.
 
+## Commercial Readiness & Integration
+- **CI/CD:** Automated builds and testing powered by GitHub Actions.
+- **API Documentation:** Comprehensive C-API reference available in `docs/api.md`.
+- **Deployment:** Packaging roadmap for Debian/RPM distributions defined in `packaging/`.
+- **Integration & Benchmarking:** Planned support for ROS2 (`ros_wrapper/`) and automated performance benchmarking (`benchmark/`).
+
 ## Building & Running
 
 ```bash
