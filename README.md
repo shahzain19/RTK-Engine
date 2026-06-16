@@ -1,6 +1,6 @@
-# RTK Engine
+# RTK Engine BASTION
 
-A lightweight, pure-software GNSS RTK (Real-Time Kinematic) engine implemented in C++. This engine provides high-precision positioning by processing raw GNSS observations using double-difference techniques and integer ambiguity resolution.
+BASTION is a lightweight, pure-software GNSS RTK (Real-Time Kinematic) engine implemented in C++. This engine provides high-precision positioning by processing raw GNSS observations using double-difference techniques and integer ambiguity resolution.
 
 ## Current Project Status: Phase 7 Complete (Precise Point Positioning Foundation)
 
