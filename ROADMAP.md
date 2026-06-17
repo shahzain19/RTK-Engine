@@ -45,5 +45,5 @@ This document outlines the development phases for the Lightweight Pure-Software 
 - [x] **Precise Products:** Ingestion of SP3 (orbits) and CLK (clocks) precise correction products.
 - [x] **Atmospheric Modeling:** Saastamoinen tropospheric delay model implementation.
 - [x] **Ionospheric Refinement:** Integration of Klobuchar and dual-frequency IF combinations.
-- [ ] **PPP EKF Solver:** Full integration of precise products into the EKF state space for decimeter-level global positioning.
-- [ ] **Moving Base RTK:** Support for relative positioning between two moving platforms.
+- [x] **PPP EKF Solver:** Full integration of precise products into the EKF state space for decimeter-level global positioning.
+- [x] **Moving Base RTK:** Support for relative positioning between two moving platforms.
